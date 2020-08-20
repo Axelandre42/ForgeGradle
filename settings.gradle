@@ -1,2 +1,3 @@
-rootProject.name = 'ForgeGradle'
+rootProject.name = 'forgegradle'
+include 'version'
 enableFeaturePreview('STABLE_PUBLISHING') //Make building shut up.
