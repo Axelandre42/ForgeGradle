@@ -13,6 +13,23 @@ compileJava {
 
 group = 'net.minecraftforge.gradle'
 
+gradlePlugin {
+    plugins {
+        userdev {
+            id = group + '.userdev'
+            implementationClass = 'net.minecraftforge.gradle.userdev.UserDevPlugin'
+        }
+        patcher {
+            id = group + '.patcher'
+            implementationClass = 'net.minecraftforge.gradle.patcher.PatcherPlugin'
+        }
+        mcp {
+            id = group + '.mcp'
+            implementationClass = 'net.minecraftforge.gradle.mcp.MCPPlugin'
+        }
+    }
+}
+
 sourceSets {
     common
     mcp
@@ -80,7 +97,7 @@ dependencies {
     userdevImplementation sourceSets.common.output
 }
 
-/*
+/* --- NOT NEEDED ---
 //Gradle doesn't add it's own source when doing the API. So lets hack it in!
 import org.gradle.plugins.ide.eclipse.model.*
 import org.gradle.plugins.ide.eclipse.model.internal.*
@@ -99,20 +116,22 @@ project.extensions.eclipse.classpath.file.whenMerged { Classpath cp ->
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        java(MavenPublication) {
             from components.java
         }
     }
     repositories {
         maven {
-            if (project.hasProperty('forgeMavenPassword')) {
+            url = 'https://files.axelandre42.ovh/maven/'
+            authentication {
+                basic(BasicAuthentication)
+            }
+
+            if (System.env.MAVEN_USERNAME && System.env.MAVEN_PASSWORD) {
                 credentials {
-                    username project.properties.forgeMavenUser
-                    password project.properties.forgeMavenPassword
+                    username = System.env.USERNAME
+                    password = System.env.PASSWORD
                 }
-                url 'https://files.minecraftforge.net/maven/manage/upload'
-            } else {
-                url 'file://' + rootProject.file('repo').getAbsolutePath()
             }
         }
     }

@@ -48,17 +48,15 @@ def printVersion() {
     println("****************************************")
 }
 
-task bumpMajor {
-    doLast {
-        def versionProperties = loadProperties(versionFile)
-        def major = Integer.parseInt(versionProperties.getProperty('version.major', '0'))
-        versionProperties.setProperty('version.major', Integer.toString(major + 1))
-        versionProperties.setProperty('version.minor', '0')
-        storeProperties(versionProperties, versionFile, 'Version file')
-    }
+task bumpMajor << {
+    def versionProperties = loadProperties(versionFile)
+    def major = Integer.parseInt(versionProperties.getProperty('version.major', '0'))
+    versionProperties.setProperty('version.major', Integer.toString(major + 1))
+    versionProperties.setProperty('version.minor', '0')
+    storeProperties(versionProperties, versionFile, 'Version file')
 }
 
-task bumpMinor >>> {
+task bumpMinor << {
     def versionProperties = loadProperties(versionFile)
     def major = Integer.parseInt(versionProperties.getProperty('version.minor', '0'))
     versionProperties.setProperty('version.minor', Integer.toString(major + 1))
