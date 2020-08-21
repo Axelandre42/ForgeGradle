@@ -38,6 +38,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ExternalModuleDependency;
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.TaskProvider;
@@ -52,8 +53,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class UserDevPlugin implements Plugin<Project> {
-    private static String MINECRAFT = "minecraft";
-    private static String DEOBF = "deobf";
+    private static final String MINECRAFT = "minecraft";
+    private static final String DEOBF = "deobf";
     public static String OBF = "__obfuscated";
 
     @Override
@@ -90,7 +91,7 @@ public class UserDevPlugin implements Plugin<Project> {
                     Task jar = project.getTasks().getByName(jarName);
                     if (!(jar instanceof Jar))
                         throw new IllegalStateException(jarName + "  is not a jar task. Can only reobf jars!");
-                    task.setInput(((Jar) jar).getArchivePath());
+                    task.setInput(((Jar) jar).getArchiveFile().get().getAsFile());
                     task.dependsOn(jar);
 
                     if (createMcpToSrg != null && task.getMappings().equals(createMcpToSrg.getOutputs().getFiles().getSingleFile())) {
@@ -278,7 +279,7 @@ public class UserDevPlugin implements Plugin<Project> {
                     .attach(project);
             project.getRepositories().maven(e -> {
                 e.setUrl(Utils.MOJANG_MAVEN);
-                e.metadataSources(src -> src.artifact());
+                e.metadataSources(MavenArtifactRepository.MetadataSources::artifact);
             });
             project.getRepositories().mavenCentral(); //Needed for MCP Deps
             if (mcrepo == null)
